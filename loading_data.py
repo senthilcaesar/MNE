@@ -1,6 +1,7 @@
 import os
 import numpy as np 
 import mne
+# pylint: disable=E1101
 
 sample_data_raw_file = 'sample_audvis_filt-0-40_raw.fif'
 raw = mne.io.read_raw_fif(sample_data_raw_file)
@@ -51,7 +52,3 @@ epochs.equalize_event_counts(conds_we_care_about)  # this operates in-place
 aud_epochs = epochs['auditory']
 vis_epochs = epochs['visual']
 aud_epochs.plot_image(picks=['MEG 1332', 'EEG 021'])
-
-
-
-
