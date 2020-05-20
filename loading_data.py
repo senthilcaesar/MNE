@@ -51,4 +51,14 @@ conds_we_care_about = ['auditory/left', 'auditory/right',
 epochs.equalize_event_counts(conds_we_care_about)  # this operates in-place
 aud_epochs = epochs['auditory']
 vis_epochs = epochs['visual']
-aud_epochs.plot_image(picks=['MEG 1332', 'EEG 021'])
+# aud_epochs.plot_image(picks=['MEG 1332', 'EEG 021'])
+
+frequencies = np.arange(7, 30, 3)
+power = mne.time_frequency.tfr_morlet(aud_epochs, n_cycles=2, return_itc=False,
+                                      freqs=frequencies, decim=3)
+#power.plot(['MEG 1332'])
+
+aud_evoked = aud_epochs.average()
+vis_evoked = vis_epochs.average()
+aud_evoked.plot_joint(picks='eeg')
+aud_evoked.plot_topomap(times=[0., 0.08, 0.1, 0.12, 0.2], ch_type='eeg')
