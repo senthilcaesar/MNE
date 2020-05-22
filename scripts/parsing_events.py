@@ -3,7 +3,7 @@ import os
 import numpy as np 
 # pylint: disable=E1101
 
-sample_data_raw_file = 'sample_audvis_filt-0-40_raw.fif'
+sample_data_raw_file = '/Users/senthilp/Desktop/mne_tutorial/sample_audvis_filt-0-40_raw.fif'
 raw = mne.io.read_raw_fif(sample_data_raw_file, verbose=False)
 raw.crop(tmax=60).load_data()
 n_time_samps = raw.n_times
@@ -40,9 +40,7 @@ print(f"STIM Event IDs: {np.unique(events[:,2])}")
 # Events array to annotations object
 mapping = {1: 'auditory/left', 2: 'auditory/right', 3: 'visual/left',
            4: 'visual/right', 5: 'smiley', 32: 'buttonpress'}
-print(events[:,0])
 onsets = events[:,0] / sample_freq
-print(onsets)
 durations = np.zeros_like(onsets)
 descriptions = [ mapping[event_id] for event_id in events[:,2] ]
 annot_from_events = mne.Annotations(onset=onsets, duration=durations,
