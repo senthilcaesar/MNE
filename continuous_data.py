@@ -38,5 +38,20 @@ start_stop_seconds = np.array([11, 13])
 start_sample, stop_sample = (start_stop_seconds * sampling_freq).astype(int)
 channel_index = 2
 eeg_data, eeg_times = eeg[channel_index, start_sample:stop_sample]
-plt.plot(eeg_times, eeg_data.T)
-plt.show()
+#plt.plot(eeg_times, eeg_data.T)
+#plt.show()
+
+# Extracting data by channel name
+channel_names = ['P1', 'P2']
+two_meg_chans = eeg[channel_names, start_sample:stop_sample]
+y_offset = np.array([5e-11, 0])  # just enough to separate the channel traces
+x = two_meg_chans[1]
+y = two_meg_chans[0].T + y_offset
+#lines = plt.plot(x, y)
+#plt.legend(lines, channel_names)
+#plt.show()
+
+# Extracting channel by types
+eeg_channel_indices = mne.pick_types(raw.info, meg=False, eeg=True)
+eeg_data, times = raw[eeg_channel_indices]
+print(eeg_data.shape)
