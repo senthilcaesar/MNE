@@ -20,7 +20,7 @@ print(f"The cropped sample data object has {n_time_samps} time samples and {n_ch
 print(f"The last time sample at {time_secs[-1]} seconds.")
 print(f"The first few channel names are {ch_names[:3]}")
 print(f"Bad channels marked during data acquisition {raw.info['bads']}")
-print(f"Sampling Frequency {raw.info['sfreq']} Hz")
+print(f"Sampling Frequency (No of time points/sec) {raw.info['sfreq']} Hz")
 print(f"Miscellaneous acquisition info {raw.info['description']}")
 print(f"Convert time in sec ( 60s ) to ingeter index {raw.time_as_index(60)}") # Convert time to indices
 
