@@ -39,3 +39,16 @@ my_annot.onset + time_of_first_sample
 print(raw.annotations.onset)
 
 fig = raw.plot(start=2, duration=6, block=True)
+
+# Iterating over annotations
+for ann in raw.annotations:
+    descr = ann['description']
+    start = ann['onset']
+    end = ann['onset'] + ann['duration']
+    print(f"{descr} goes from {start} to {end}")
+
+# Write and read annotations to/from CSV file
+raw.annotations.save('saved-annotations.csv')
+ann_from_csv_file = mne.read_annotations('saved-annotations.csv')
+print(ann_from_csv_file)
+
