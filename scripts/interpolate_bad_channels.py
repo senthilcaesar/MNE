@@ -35,3 +35,4 @@ for title, data in zip(lst1, lst2):
 ''' Also consider ever more automated approach to bad channel detection
 and interpolation using autoreject package ( http://autoreject.github.io/ )
 which interfaces well with MNE-Python-based pipeline'''
+
