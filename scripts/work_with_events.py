@@ -19,7 +19,7 @@ print("3 columns in the event array (Index of event, Length of the event, Event 
 print(f"STIM Event IDs: {np.unique(events[:,2])}")
 
 # Mapping Event IDs to trail descriptor
-'''Keeping track os which Event ID corresponds to which experimental condition is important
+'''Keeping track of which Event ID corresponds to which experimental condition is important
 Event dictionaries are used when extracting epochs from continuous data and the resulting
 epoch object allows pooling by requesting partial trail descriptor...
 "auditory" trails will select all epochs with Event IDs 1 and 2
