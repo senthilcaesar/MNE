@@ -96,4 +96,3 @@ epochs_from_file = mne.read_epochs('saved-audiovisual-epo.fif', preload=True)
 # Interating over Epochs
 for epoch in epochs[:3]:
     print(type(epoch))
-
