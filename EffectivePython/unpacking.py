@@ -16,3 +16,12 @@ of the ccurrent item in the list
 for i, flavor in enumerate(flavor_list): # enumarate wraps any iterator with a lazy generator
     print(f"{i+1}: {flavor}")
 
+# Prefer catch-all unpacking over slicing
+car_ages = [0, 9, 4, 8, 7, 20, 19, 1, 6, 15]
+car_ages_descending = sorted(car_ages, reverse=True)
+oldest, second_oldest, *others = car_ages_descending
+print(oldest, second_oldest, others)
+oldest, *others, youngest = car_ages_descending
+print(oldest, youngest, others)
+*others, second_youngest, youngest = car_ages_descending
+print(youngest, second_youngest, others)
