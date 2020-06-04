@@ -8,7 +8,7 @@ sample_data_raw_file = '/Users/senthilp/Desktop/mne_tutorial/sample_audvis_raw.f
 raw = mne.io.read_raw_fif(sample_data_raw_file, verbose=False)
 '''Most of the fields of raw.info reflect metadata recorder at 
     acquisition time and should not be changed by the user'''
-#print(raw.info)
+print(raw.info)
 raw.crop(tmax=60).load_data()
 ''' STIM channels are often called triggers and are used in the dataset
 to mark experimental events such as stimulus onset, stimulus type and
@@ -32,6 +32,12 @@ event_dict = {'auditory/left': 1, 'auditory/right': 2, 'visual/left': 3,
 #fig = mne.viz.plot_events(events, sfreq=raw.info['sfreq'], first_samp=raw.first_samp, event_id=event_dict)
 #fig.subplots_adjust(right=0.7)
 
+#print(raw.info['chs'])
 # Plotting events and raw data together
 event_color = {1: 'r', 2: 'g', 3: 'b', 4: 'm', 5: 'y', 32: 'k'}
-raw.plot(events=events, start=5, duration=10, color='gray', event_color=event_color, block=True)
+print(events)
+# # print(raw.time_as_index(3.7))
+print(f"{raw.first_samp} time samples have passed between the onset of the hardware \
+# # acquistion system and the time when data started to be recorded to disk")
+print(raw.annotations.onset)
+raw.plot(events=events, start=5, duration=6, color='gray', event_color=event_color, block=True)

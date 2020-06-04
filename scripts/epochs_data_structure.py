@@ -46,53 +46,53 @@ print(epochs.event_id)
 del raw 
 
 # Basic visualization of Epochs object
-# epochs.plot(n_epochs=10, block=True)
+epochs.plot(n_epochs=2, block=True)
 
 # Pool across conditions
-print(f"All trails where the stimulus was a face {np.shape(epochs['face'])}")
-print(f"All trails where the stimulus was a visual {np.shape(epochs['visual'])}")
-print(f"All trails where the stimulus was a auditory {np.shape(epochs['auditory'])}")
-print(f"All trails where the stimulus was a buttonpress {np.shape(epochs['buttonpress'])}")
-# epochs['face'].plot(n_epochs=10, block=True)
+# print(f"All trails where the stimulus was a face {np.shape(epochs['face'])}")
+# print(f"All trails where the stimulus was a visual {np.shape(epochs['visual'])}")
+# print(f"All trails where the stimulus was a auditory {np.shape(epochs['auditory'])}")
+# print(f"All trails where the stimulus was a buttonpress {np.shape(epochs['buttonpress'])}")
+# # epochs['face'].plot(n_epochs=10, block=True)
 
-# Selecting epochs by index
-print(f"Epochs 0-9 of epoch object {np.shape(epochs[:10])}")
-print(f"Epochs 0-9 of epoch numpy array {np.shape(epochs_arr[:10,:,:])}")
-print(f"Epochs 1, 3, 5, 7 of epoch object {np.shape(epochs[1:8:2])}")
+# # Selecting epochs by index
+# print(f"Epochs 0-9 of epoch object {np.shape(epochs[:10])}")
+# print(f"Epochs 0-9 of epoch numpy array {np.shape(epochs_arr[:10,:,:])}")
+# print(f"Epochs 1, 3, 5, 7 of epoch object {np.shape(epochs[1:8:2])}")
 
 # Selecting, dropping and reordering channels
-epochs_eeg = epochs.copy().pick_types(meg=False, eeg=True)
-print(epochs_eeg.ch_names)
+# epochs_eeg = epochs.copy().pick_types(meg=False, eeg=True)
+# print(epochs_eeg.ch_names)
 
-new_order = ['EEG 002', 'STI 014', 'EOG 061', 'MEG 2521']
-epochs_subset = epochs.copy().reorder_channels(new_order)
-print(epochs_subset.ch_names)
+# new_order = ['EEG 002', 'STI 014', 'EOG 061', 'MEG 2521']
+# epochs_subset = epochs.copy().reorder_channels(new_order)
+# print(epochs_subset.ch_names)
 
 # Changing channel name and type
-epochs.rename_channels({'EOG 061': 'BlinkChannel'})
-epochs.set_channel_types({'EEG 060': 'ecg'})
-print(list(zip(epochs.ch_names, epochs.get_channel_types()))[-4:])
-epochs.rename_channels({'BlinkChannel': 'EOG 061'})
-epochs.set_channel_types({'EEG 060': 'eeg'})
+# epochs.rename_channels({'EOG 061': 'BlinkChannel'})
+# epochs.set_channel_types({'EEG 060': 'ecg'})
+# print(list(zip(epochs.ch_names, epochs.get_channel_types()))[-4:])
+# epochs.rename_channels({'BlinkChannel': 'EOG 061'})
+# epochs.set_channel_types({'EEG 060': 'eeg'})
 
 # Selection in the time domain
-shorter_epochs = epochs.copy().crop(tmin=-0.1, tmax=0.1) # 120 time points
-# shorter_epochs.plot(block=True, n_epochs=5)
-for name, obj in dict(Original=epochs, Cropped=shorter_epochs).items():
-    print(f"{name} data has {obj.get_data().shape[-1]} time samples")
+# shorter_epochs = epochs.copy().crop(tmin=-0.1, tmax=0.1) # 120 time points
+# # shorter_epochs.plot(block=True, n_epochs=5)
+# for name, obj in dict(Original=epochs, Cropped=shorter_epochs).items():
+#     print(f"{name} data has {obj.get_data().shape[-1]} time samples")
 
-# Get single epoch from epochs object
-single_epoch = epochs.get_data(item=2)
-print(np.shape(single_epoch))
+# # Get single epoch from epochs object
+# single_epoch = epochs.get_data(item=2)
+# print(np.shape(single_epoch))
 
-# Export data to Pandas DataFrames
-df = epochs.to_data_frame(index=['condition', 'epoch', 'time'])
-df.to_csv('file1.csv')
+# # Export data to Pandas DataFrames
+# df = epochs.to_data_frame(index=['condition', 'epoch', 'time'])
+# df.to_csv('file1.csv')
 
 # Loading and saving Epochs objects to disk
-epochs.save('saved-audiovisual-epo.fif', overwrite=True)
-epochs_from_file = mne.read_epochs('saved-audiovisual-epo.fif', preload=True)
+# epochs.save('saved-audiovisual-epo.fif', overwrite=True)
+# epochs_from_file = mne.read_epochs('saved-audiovisual-epo.fif', preload=True)
 
-# Interating over Epochs
-for epoch in epochs[:3]:
-    print(type(epoch))
+# # Interating over Epochs
+# for epoch in epochs[:3]:
+#     print(type(epoch))
