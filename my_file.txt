@@ -1,7 +1,0 @@
-The rapid rise of AI could potentially change healthcare forever, leading to faster diagnoses and allowing providers to spend more time communicating directly with patients. According to a new report from the Brookings Institution, however, there are also risks associated with AI in healthcare that must be addressed.
-
-These are six potential risks of AI that were identified in the nonprofit organization’s report:
-
-1. Injuries and error: “The most obvious risk is that AI systems will sometimes be wrong, and that patient injury or other healthcare problems may result,” author W. Nicholson Price II, University of Michigan Law School, wrote. “If an AI system recommends the wrong drug for a patient, fails to notice a tumor on a radiological scan, or allocates a hospital bed to one patient over another because it predicted wrongly which patient would benefit more, the patient could be injured.”
-
-Errors related AI systems would be especially troubling because they can impact so many patients at once. In addition, patients and the patients’ family and friends are likely to not react well if they find out “a computer” is the reason a significant mistake was made. And in this modern era of online patient reviews, it would not take long for the word to get out that a providers’ AI capabilities could not be trusted.

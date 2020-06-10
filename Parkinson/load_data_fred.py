@@ -4,9 +4,19 @@ import numpy as np
 import os
 
 '''
-CTL do session 1    ( data from 28 healthy age-matched control CTL subjects  )
+CTL do session 1    ( data from 28 age-matched control CTL subjects  )
 No CTL do session 2 ( data from 28 Parkinsons’s disease PD patients )
+
 Referenced to CPz
+
+( 1 min of eyes closed rest )
+trigger s3 happens every 2 sec
+trigger s4 happens every 2 sec
+
+( 1 min of eyes open rest )
+trigger s1 happens every 2 sec
+trigger s2 happens every 2 sec
+
 '''
 
 def make_montage(data_eeg: dict, ch_names: list) -> dict:
@@ -81,16 +91,6 @@ raw.set_montage(my_montage)
 '''Annotations are a way of storing short strings of information about temporal spans of a raw object'''
 my_annot = mne.Annotations(onset=sample_times_sec[1:], duration=durations[1:], description=events_type[1:])
 raw.set_annotations(my_annot)
-
-'''
-( 1 min of eyes closed rest )
-trigger s3 happens every 2 sec
-trigger s4 happens every 2 sec
-
-( 1 min of eyes open rest )
-trigger s1 happens every 2 sec
-trigger s2 happens every 2 sec
-'''
 
 # Plot the annotation alongside raw data
 fig = raw.plot(n_channels=10, start=20, duration=6, scalings='auto', show=True, block=True)
