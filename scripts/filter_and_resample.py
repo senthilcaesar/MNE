@@ -18,12 +18,26 @@ raw.crop(tmax=60).load_data()
 '''
 
 # Slow drifts
-mag_channels = mne.pick_types(raw.info, meg='mag')
-# raw.plot(duration=60, order=mag_channels, proj=False, n_channels=len(mag_channels), remove_dc=False, block=True)
+print(f"Sampling frequency {raw.info['sfreq']}")
+picks = mne.pick_types(raw.info, meg='mag')
 
-for cutoff in (0.1, 0,2):
-    raw_highpass = raw.copy().filter(l_freq=cutoff, h_freq=None)
-    fig = raw_highpass.plot(duration=60, order=mag_channels, proj=False,
-                            n_channels=len(mag_channels), remove_dc=False, block=True)
-    fig.subplots_adjust(top=0.9)
-    fig.suptitle('High-pass filtered at {} Hz'.format(cutoff), size='xx-large', weight='bold')
+#Construct Epochs
+events = mne.find_events(raw, stim_channel='STI 014')
+event_id, tmin, tmax = 1, -1., 3.
+baseline = (None, 0)
+epochs = mne.Epochs(raw, events, event_id, tmin, tmax, picks=picks,
+                    baseline=baseline,preload=True)
+
+#epochs.resample(150., npad='auto')
+epochs.plot_psd()
+
+#raw.plot(duration=1, order=picks, proj=False, n_channels=1, remove_dc=False, block=True)
+#raw.filter(l_freq=0.2, h_freq=None)
+#raw.plot(duration=60, order=picks, proj=False, n_channels=10, remove_dc=False, block=True)
+
+# for cutoff in (0.1, 0,2):
+#     raw_highpass = raw.copy().filter(l_freq=cutoff, h_freq=None)
+#     fig = raw_highpass.plot(duration=60, order=mag_channels, proj=False,
+#                             n_channels=10, remove_dc=False, block=True)
+#     fig.subplots_adjust(top=0.9)
+#     fig.suptitle('High-pass filtered at {} Hz'.format(cutoff), size='xx-large', weight='bold')

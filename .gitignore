@@ -3,3 +3,8 @@ BrainVision_data
 .vscode
 *.csv
 __pycache__/
+.DS_Store
+*.h5
+*.npy
+*.pkl
+*.xlsx
