@@ -10,25 +10,16 @@ electrodes = ['Fp1', 'Fz', 'F3', 'F7', 'FT9', 'FC5', 'FC1', 'C3', 'T7', 'TP9', '
     'POz', 'PO4', 'PO8', 'P6', 'P2', 'CP4', 'TP8', 'C6', 'C2', 'FC4', 'FT8', 
     'F6', 'F2', 'AF4', 'AF8']
 
-CTL_power_eyes_closed_S3avg1 = mne.time_frequency.read_tfrs(f'S3-{dict_session[1]}-tfr.h5')
-CTL_power_eyes_closed_S3avg1[0].data = 10 * np.log10(CTL_power_eyes_closed_S3avg1[0].data)
-PD_power_eyes_closed_S3avg2 = mne.time_frequency.read_tfrs(f'S3-{dict_session[2]}-tfr.h5')
-PD_power_eyes_closed_S3avg2[0].data = 10 * np.log10(PD_power_eyes_closed_S3avg2[0].data)
+CTL_power_eyes_closed_S3S4avg = mne.time_frequency.read_tfrs(f'S3_S4-{dict_session[1]}-tfr.h5')
+CTL_power_eyes_closed_S3S4avg[0].data = 10 * np.log10(CTL_power_eyes_closed_S3S4avg[0].data)
+PD_power_eyes_closed_S3S4avg = mne.time_frequency.read_tfrs(f'S3_S4-{dict_session[2]}-tfr.h5')
+PD_power_eyes_closed_S3S4avg[0].data = 10 * np.log10(PD_power_eyes_closed_S3S4avg[0].data)
 
-CTL_power_eyes_closed_S4avg1 = mne.time_frequency.read_tfrs(f'S4-{dict_session[1]}-tfr.h5')
-CTL_power_eyes_closed_S4avg1[0].data = 10 * np.log10(CTL_power_eyes_closed_S4avg1[0].data)
-PD_power_eyes_closed_S4avg2 = mne.time_frequency.read_tfrs(f'S4-{dict_session[2]}-tfr.h5')
-PD_power_eyes_closed_S4avg2[0].data = 10 * np.log10(PD_power_eyes_closed_S4avg2[0].data)
 
-CTL_power_eyes_closed_S3avg1[0].data = CTL_power_eyes_closed_S3avg1[0].data - PD_power_eyes_closed_S3avg2[0].data
-CTL_power_eyes_closed_S4avg1[0].data = CTL_power_eyes_closed_S4avg1[0].data - PD_power_eyes_closed_S4avg2[0].data
+CTL_power_eyes_closed_S3S4avg[0].data = CTL_power_eyes_closed_S3S4avg[0].data - PD_power_eyes_closed_S3S4avg[0].data
 
 for pick_channel in electrodes:
-    fig, axis = plt.subplots(1, 2, figsize=(12,6))
-    CTL_power_eyes_closed_S3avg1[0].plot([pick_channel], show=False, axes=axis[0], colorbar=False)
-    CTL_power_eyes_closed_S4avg1[0].plot([pick_channel], show=False, axes=axis[1], colorbar=True)
-    axis[0].set_title('CTL S3 - PD S3')
-    axis[1].set_title('CTL S4 - PD S4')
-    mne.viz.tight_layout()
+    fig, axis = plt.subplots(1, 1, figsize=(8,5))
+    CTL_power_eyes_closed_S3S4avg[0].plot([pick_channel], show=False, axes=axis, colorbar=True)
     fig.suptitle(f'CTL minus PD eyes closed {pick_channel}', fontsize=12)
     fig.savefig(f'/Users/senthilp/Desktop/CTL_minus_PD_eyesclosed/{pick_channel}.png')

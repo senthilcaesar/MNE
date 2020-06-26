@@ -60,6 +60,47 @@ def iterate_over_annotation(raw):
         print(f"{descr} goes from {start} to {end}")
 
 
+def plot_topomap_power(power_avg):
+    fig, axis = plt.subplots(1, 4, figsize=(7, 4))
+    power_avg[0].plot_topomap(ch_type='eeg', fmin=12, fmax=30,axes=axis[0],
+                   title='Beta', show=False)
+    power_avg[0].plot_topomap(ch_type='eeg', fmin=8, fmax=12,axes=axis[1],
+                   title='Alpha', show=False)
+    power_avg[0].plot_topomap(ch_type='eeg', fmin=4, fmax=8,axes=axis[2],
+                   title='Theta', show=False)
+    power_avg[0].plot_topomap(ch_type='eeg', fmin=1, fmax=4,axes=axis[3],
+                   title='Delta', show=False)
+    mne.viz.tight_layout()
+    plt.show()
+
+
+def welch_PSD(epochs_eyes_open):
+    from mne.time_frequency import psd_welch
+    fig, ax = plt.subplots(1, 1, figsize=(8,5))
+    kwargs = dict(fmin=0, fmax=50, n_jobs=4)
+    PD_psds_welch_mean, freqs_mean = psd_welch(epochs_eyes_open, average='mean', **kwargs)
+    PD_psds_welch_mean = 10 * np.log10(PD_psds_welch_mean)
+    PD_psds_welch_mean = PD_psds_welch_mean.mean(0).mean(0)
+    CTL_psds_welch_mean = np.load('CTL_PSD_mean.npy')
+    ax.plot(freqs_mean, CTL_psds_welch_mean, color='red', ls='-', label='CTL mean of segments')
+    ax.plot(freqs_mean, PD_psds_welch_mean, color='green', ls='-', label='PD mean of segments')
+    y_location = np.round(np.arange(-15,15,5), 2)
+    ax.set_yticks(y_location)
+    y_labelname = y_location
+    ax.set_yticklabels(y_labelname)
+    ax.set(title='Welch PSD - Eyes open', xlabel='Frequncy (Hz)', ylabel='Power Spectral Density (dB)')
+    ax.legend(loc='upper right')
+    plt.show()
+
+
+def GFP(epochs_eyes_open1, epochs_eyes_open2, session):
+    eyesOpen_S1 = epochs_eyes_open1.average()
+    eyesOpen_S2 = epochs_eyes_open2.average()
+    mne.viz.plot_compare_evokeds(dict(S1=eyesOpen_S1, S2=eyesOpen_S2),
+                              legend='upper left', show_sensors='lower right',
+                              title=f'{dict_session[session]} 1 - S1 versus S2 (EYES OPEN) \n Epochs averaged together in each condition')
+
+
 def ica_apply(raw, n_component=15, l_freq=0.5):
     filt_raw = raw.copy()
     filt_raw.load_data().filter(l_freq=l_freq, h_freq=None)
@@ -71,12 +112,12 @@ def ica_apply(raw, n_component=15, l_freq=0.5):
 def plot_psd(epochs):
     # Plot power spectral density
     # Exploring frequency content of our epochs
-    epochs.plot_psd(fmax=60., average=True, spatial_colors=False)
-    epochs.plot_psd_topomap(normalize=True)
+    epochs.plot_psd(fmin=0, fmax=50., average=True, spatial_colors=False)
+    #epochs.plot_psd_topomap(normalize=True)
 
 
 subject, session = (1, 2)
-do_ica = False
+do_ica = True
 do_tfr = False
 dict_session = {1:'CTL', 2:'PD'}
 filename = f"/Users/senthilp/Desktop/PD/80{subject}_{session}_PD_REST.mat"
@@ -152,49 +193,28 @@ if do_ica:
 tmin = -1.0 # start of each epoch ( 2 sec before the trigger )
 tmax = 3.0 # end of each epoch ( 4 sec after the trigger )
 
-# Load condition 1 eyes open
-event_id_eyes_open1 = dict(S1=1)
-epochs_eyes_open1 = mne.Epochs(raw, events, tmin=tmin, tmax=tmax, event_id=event_id_eyes_open1, 
+# Load condition eyes open
+event_id_eyes_open = dict(S1=1, S2=2)
+epochs_eyes_open = mne.Epochs(raw, events, tmin=tmin, tmax=tmax, event_id=event_id_eyes_open, 
                     preload=True, verbose=True)
-epochs_arr_eyes_open1 = epochs_eyes_open1.get_data() # Get all epochs as a 3D array
-print(f"Shape of eyes open epochs array {np.shape(epochs_arr_eyes_open1)}")
-print(f"Size of 1st epoch {np.shape(epochs_arr_eyes_open1[0,:,:])}")
+epochs_arr_eyes_open = epochs_eyes_open.get_data() # Get all epochs as a 3D array
+print(f"Shape of eyes open epochs array {np.shape(epochs_arr_eyes_open)}")
+print(f"Size of 1st epoch {np.shape(epochs_arr_eyes_open[0,:,:])}")
 # epochs_eyes_open1.plot(n_channels=10, n_epochs=10, block=True, scalings='auto') # scalings is Y limits for plots
-
-# Load condition 2 eyes open
-event_id_eyes_open2 = dict(S2=2)
-epochs_eyes_open2 = mne.Epochs(raw, events, tmin=tmin, tmax=tmax, event_id=event_id_eyes_open2, 
-                    preload=True, verbose=True)
-epochs_arr_eyes_open2 = epochs_eyes_open2.get_data() # Get all epochs as a 3D array
-print(f"Shape of eyes open epochs array {np.shape(epochs_arr_eyes_open2)}")
-print(f"Size of 1st epoch {np.shape(epochs_arr_eyes_open2[0,:,:])}")
-
-def GFP(epochs_eyes_open1, epochs_eyes_open2, session):
-    eyesOpen_S1 = epochs_eyes_open1.average()
-    eyesOpen_S2 = epochs_eyes_open2.average()
-    mne.viz.plot_compare_evokeds(dict(S1=eyesOpen_S1, S2=eyesOpen_S2),
-                              legend='upper left', show_sensors='lower right',
-                              title=f'{dict_session[session]} 1 - S1 versus S2 (EYES OPEN) \n Epochs averaged together in each condition')
 
 # Time Frequency Analysis
 if (do_tfr):
     freqs = [2,3,4,5,6,7,8,9,11,13,15,17,20,23,26,30,35,40,45,50]    # linearly spaced
     # freqs = np.logspace(*np.log10([4, 60]), num=21)                # logarithmic spaced
     n_cycles = [3, 3, 3, 3, 3, 5, 5, 5, 5, 5, 5, 5, 5, 7, 7, 7, 7, 7, 7, 7]
-    power_eyes_open1 = tfr_morlet(epochs_eyes_open1, freqs=freqs, n_cycles=n_cycles, 
-                         use_fft=True, return_itc=False, decim=3, 
-                         n_jobs=4, average=False)
-    power_eyes_open2 = tfr_morlet(epochs_eyes_open2, freqs=freqs, n_cycles=n_cycles, 
+    power_eyes_open = tfr_morlet(epochs_eyes_open, freqs=freqs, n_cycles=n_cycles, 
                          use_fft=True, return_itc=False, decim=3, 
                          n_jobs=4, average=False)
 
-    power_eyes_open_avg1 = power_eyes_open1.average()
-    power_eyes_open_avg2 = power_eyes_open2.average()
-    power_eyes_open_avg1.save(f'S1-{dict_session[session]}-tfr.h5', overwrite=True)
-    power_eyes_open_avg2.save(f'S2-{dict_session[session]}-tfr.h5', overwrite=True)
+    power_eyes_open_avg = power_eyes_open.average()
+    power_eyes_open_avg.save(f'S1_S2-{dict_session[session]}-tfr.h5', overwrite=True)
 
-power_eyes_open_avg1 = mne.time_frequency.read_tfrs(f'S1-{dict_session[session]}-tfr.h5')
-power_eyes_open_avg2 = mne.time_frequency.read_tfrs(f'S2-{dict_session[session]}-tfr.h5')
+power_eyes_open_avg = mne.time_frequency.read_tfrs(f'S1_S2-{dict_session[session]}-tfr.h5')
 
 # print(power_eyes_open_avg1)
 # #power_eyes_open_avg.plot_topo(vmin=vmin, vmax=vmax, title='Using Morlet wavelets and EpochsTFR', show=True)
@@ -203,31 +223,15 @@ power_eyes_open_avg2 = mne.time_frequency.read_tfrs(f'S2-{dict_session[session]}
 #                              legend='upper left', show_sensors='upper right')
 
 # Optional: convert power to decibels (dB = 10 * log10(power))
-power_eyes_open_avg1[0].data = 10 * np.log10(power_eyes_open_avg1[0].data)
-power_eyes_open_avg2[0].data = 10 * np.log10(power_eyes_open_avg2[0].data)
+power_eyes_open_avg[0].data = 10 * np.log10(power_eyes_open_avg[0].data)
+
+style = dict(sensors=True, image_interp='sinc')
+#power_eyes_open_avg[0].plot_joint(mode=None, timefreqs=[(0.5, 10), (1.3, 20)], topomap_args=style)
 
 # for pick_channel in electrodes:
-#     fig, axis = plt.subplots(1, 2, figsize=(12,6))
-#     power_eyes_open_avg1[0].plot([pick_channel], show=False, axes=axis[0], colorbar=False, yscale='linear')
-#     power_eyes_open_avg2[0].plot([pick_channel], show=False, axes=axis[1], colorbar=True, yscale='linear')
-#     axis[0].set_title('S1')
-#     axis[1].set_title('S2')
-#     mne.viz.tight_layout()
+#     fig, axis = plt.subplots(1, 1, figsize=(8,5))
+#     power_eyes_open_avg[0].plot([pick_channel], show=False, axes=axis, colorbar=True)
 #     fig.suptitle(f'{dict_session[session]} eyes open {pick_channel}', fontsize=12)
 #     fig.savefig(f'/Users/senthilp/Desktop/{dict_session[session]}_S1_and_S2/{pick_channel}.png')
 
-def plot_topomap_power(power_avg):
-    fig, axis = plt.subplots(1, 4, figsize=(7, 4))
-    power_avg[0].plot_topomap(ch_type='eeg', fmin=12, fmax=30,axes=axis[0],
-                   title='Beta', show=False)
-    power_avg[0].plot_topomap(ch_type='eeg', fmin=8, fmax=12,axes=axis[1],
-                   title='Alpha', show=False)
-    power_avg[0].plot_topomap(ch_type='eeg', fmin=4, fmax=8,axes=axis[2],
-                   title='Theta', show=False)
-    power_avg[0].plot_topomap(ch_type='eeg', fmin=1, fmax=4,axes=axis[3],
-                   title='Delta', show=False)
-    mne.viz.tight_layout()
-    plt.show()
-
-plot_topomap_power(power_eyes_open_avg1)
-plot_topomap_power(power_eyes_open_avg2)
+# plot_topomap_power(power_eyes_open_avg)
