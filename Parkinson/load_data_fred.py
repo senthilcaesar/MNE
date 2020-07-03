@@ -161,12 +161,12 @@ my_annot = mne.Annotations(onset=sample_times_sec[1:], duration=durations[1:], d
 raw.set_annotations(my_annot)
      
 # Plot the annotation alongside raw data
-# unfiltered_data = raw.copy()
+unfiltered_data = raw.copy()
 # filtered_data = raw.copy()
 # filtered_data.filter(0.5, None)
 # raw.filter(l_freq=10.5, h_freq=None)
 # raw.plot_psd(area_mode='range', tmax=10.0, average=True)
-# fig1 = unfiltered_data.plot(n_channels=10, start=20, duration=10, scalings='auto', show=True, block=True)
+fig1 = unfiltered_data.plot(n_channels=10, start=20, duration=10, scalings='auto', show=True, block=True)
 # fig2 = filtered_data.plot(n_channels=10, start=20, duration=10, scalings='auto', show=True, block=True)
 
 
