@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from mne.preprocessing import ICA
 from mne.time_frequency import psd_welch
 from mne.time_frequency import tfr_morlet
+from mne.time_frequency import psd_multitaper
 from mne.preprocessing import create_eog_epochs
 
 '''
@@ -63,9 +64,9 @@ def iterate_over_annotation(raw):
 
 def plot_topomap_power(power_avg):
     fig, axis = plt.subplots(1, 4, figsize=(7, 4))
-    power_avg[0].plot_topomap(ch_type='eeg', fmin=12, fmax=30,axes=axis[0],
+    power_avg[0].plot_topomap(ch_type='eeg', fmin=13, fmax=30,axes=axis[0],
                    title='Beta', show=False)
-    power_avg[0].plot_topomap(ch_type='eeg', fmin=8, fmax=12,axes=axis[1],
+    power_avg[0].plot_topomap(ch_type='eeg', fmin=8, fmax=13,axes=axis[1],
                    title='Alpha', show=False)
     power_avg[0].plot_topomap(ch_type='eeg', fmin=4, fmax=8,axes=axis[2],
                    title='Theta', show=False)
@@ -78,12 +79,12 @@ def plot_topomap_power(power_avg):
 
 def welch_PSD(epochs_eyes_open, subject, participant):
     kwargs = dict(fmin=0, fmax=50, n_jobs=4)
-    PD_psds_welch_mean, freqs_mean = psd_welch(epochs_eyes_open, average='mean', **kwargs)
-    PD_psds_welch_mean = 10 * np.log10(PD_psds_welch_mean)
-    PD_psds_welch_mean = PD_psds_welch_mean.mean(0).mean(0)
+    psds_welch_mean, freqs_mean = psd_welch(epochs_eyes_open, **kwargs)
+    psds_welch_mean = 10 * np.log10(psds_welch_mean)
+    psds_welch_mean = psds_welch_mean.mean(0).mean(0)
     psd_mean_subjs = f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{subject}_{participant}_PSD_mean_EO.npy'
     freq_subjs = f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{subject}_{participant}_freq_EO.npy'
-    np.save(psd_mean_subjs, PD_psds_welch_mean)
+    np.save(psd_mean_subjs, psds_welch_mean)
     np.save(freq_subjs, freqs_mean)
     return (psd_mean_subjs, freq_subjs)
 
@@ -137,10 +138,10 @@ ica_bool_PD = [None, None, 1, 2, None, None, None, None, 1, None, None, 1, None,
             ,None, 3, 3, 1, 5, None, 2, None, 2, 1, None, 5]
 ica_bool_CTL = [3, 2, None, None, None, 2, None, 1, 1, 1, None, 1, None, None, 1, 1, None,
                 1, None, None, None, None, None, 1, 1, None, None]
-participant = 'CTL'
+participant = 'PD'
 session = 1
-freq_bands = ['theta', 'alpha', 'lowerbeta', 'higherbeta', 'gamma']
-band = freq_bands[0]
+freq_bands = ['theta', 'alpha', 'lowerbeta', 'higherbeta', 'gamma', 'allbands']
+band = freq_bands[5]
 ica_dict = {participant:ica_bool_PD, participant:ica_bool_CTL}
 
 i = 0
@@ -150,7 +151,7 @@ my_variable = PDsx if participant == 'PD' else CTLsx
 for id in my_variable:
     subject, session = (id, session)
     do_ica = True
-    do_tfr = True
+    do_tfr = False
     dict_session = {1:'ON', 2:'OFF'}
     filename = f"/Users/senthilp/Desktop/PD_REST/{subject}_{session}_PD_REST.mat"
     data = read_mat(filename)
@@ -219,8 +220,8 @@ for id in my_variable:
     i += 1
 
     # Creating epochs
-    tmin =  -1.0 # start of each epoch ( 2 sec before the trigger )
-    tmax = 3.0 # end of each epoch ( 4 sec after the trigger )
+    tmin =  -2.0 # start of each epoch ( 2 sec before the trigger )
+    tmax = 4.0 # end of each epoch ( 4 sec after the trigger )
 
     # Load condition eyes open
     event_id_eyes_open = dict(S1=1, S2=2)
@@ -230,11 +231,9 @@ for id in my_variable:
     np.save('test.npy', epochs_arr_eyes_open)
     print(f"Shape of eyes open epochs array {np.shape(epochs_arr_eyes_open)}")
     print(f"Size of 1st epoch {np.shape(epochs_arr_eyes_open[0,:,:])}")
-    # subject_mean, freq = welch_PSD(epochs_eyes_open, subject, participant)
-    # PSD_sub_list.append(subject_mean)
-    # PSD_freq_list.append(freq)
-
-# mean_welch_psd(PSD_sub_list, PSD_freq_list, participant)
+    subject_mean, freq = welch_PSD(epochs_eyes_open, subject, participant)
+    PSD_sub_list.append(subject_mean)
+    PSD_freq_list.append(freq)
 
     # epochs_eyes_open.plot(n_channels=10, n_epochs=10, block=True, scalings='auto') # scalings is Y limits for plots
 
@@ -269,7 +268,9 @@ for id in my_variable:
         power_eyes_open_avg = power_eyes_open.average()
         power_eyes_open_avg.save(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{band}_{subject}_{participant}_{dict_session[session]}_EO-tfr.h5', overwrite=True)
 
-# power_eyes_open_avg = mne.time_frequency.read_tfrs(f'S1_S2-{dict_session[session]}-tfr.h5')
+mean_welch_psd(PSD_sub_list, PSD_freq_list, participant)
+
+# power_eyes_open_avg = mne.time_frequency.read_tfrs(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{band}_{subject}_{participant}_{dict_session[session]}_EO-tfr.h5')
 
 # print(power_eyes_open_avg1)
 # #power_eyes_open_avg.plot_topo(vmin=vmin, vmax=vmax, title='Using Morlet wavelets and EpochsTFR', show=True)

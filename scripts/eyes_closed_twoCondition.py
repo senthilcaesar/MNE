@@ -90,6 +90,7 @@ def welch_PSD(epochs_eyes_closed):
     CTL_psds_welch_mean, freqs_mean = psd_welch(epochs_eyes_closed, average='mean', **kwargs)
     CTL_psds_welch_mean = 10 * np.log10(CTL_psds_welch_mean)
     CTL_psds_welch_mean = CTL_psds_welch_mean.mean(0).mean(0)
+    #np.save('PD_PSD_mean_eyesclosed.npy', CTL_psds_welch_mean)
     PD_psds_welch_mean = np.load('PD_PSD_mean_eyesclosed.npy')
     ax.plot(freqs_mean, CTL_psds_welch_mean, color='red', ls='-', label='CTL mean of segments')
     ax.plot(freqs_mean, PD_psds_welch_mean, color='green', ls='-', label='PD mean of segments')
@@ -199,6 +200,7 @@ epochs_eyes_closed = mne.Epochs(raw, events, tmin=tmin, tmax=tmax, event_id=even
 epochs_arr_eyes_closed = epochs_eyes_closed.get_data() # Get all epochs as a 3D array
 print(f"Shape of eyes closed epochs array {np.shape(epochs_arr_eyes_closed)}")
 print(f"Size of 1st epoch {np.shape(epochs_arr_eyes_closed[0,:,:])}")
+welch_PSD(epochs_eyes_closed)
 # epochs_eyes_closed.plot(n_channels=10, n_epochs=10, block=True, scalings='auto') # scalings is Y limits for plots
 
 # Time Frequency Analysis
@@ -212,13 +214,13 @@ if (do_tfr):
     power_eyes_closed_avg = power_eyes_closed.average()
     power_eyes_closed_avg.save(f'S3_S4-{dict_session[session]}-tfr.h5', overwrite=True)
 
-power_eyes_closed_avg = mne.time_frequency.read_tfrs(f'S3_S4-{dict_session[session]}-tfr.h5')
+#power_eyes_closed_avg = mne.time_frequency.read_tfrs(f'S3_S4-{dict_session[session]}-tfr.h5')
 
-print(type(power_eyes_closed_avg[0]))
+#print(type(power_eyes_closed_avg[0]))
 # power_eyes_closed_avg.plot_topo(vmin=vmin, vmax=vmax, title='Using Morlet wavelets and EpochsTFR', show=True)
 
 # Optional: convert power to decibels (dB = 10 * log10(power))
-power_eyes_closed_avg[0].data = 10 * np.log10(power_eyes_closed_avg[0].data)
+#power_eyes_closed_avg[0].data = 10 * np.log10(power_eyes_closed_avg[0].data)
 
 #style = dict(sensors=True, image_interp='sinc')
 #power_eyes_closed_avg[0].plot_joint(mode=None, timefreqs=[(0.5, 10), (1.3, 20)], topomap_args=style)

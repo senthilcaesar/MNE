@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 from mne.preprocessing import ICA
 from mne.time_frequency import psd_welch
 from mne.time_frequency import tfr_morlet
+from mne.time_frequency import psd_multitaper
 from mne.preprocessing import create_eog_epochs
 
 '''
@@ -138,8 +139,8 @@ ica_bool_CTL = [3, 2, None, None, None, 2, None, 1, 1, 1, None, 1, None, None, 1
                 1, None, None, None, None, None, 1, 1, None, None]
 participant = 'CTL'
 session = 1
-freq_bands = ['theta', 'alpha', 'lowerbeta', 'higherbeta', 'gamma']
-band = freq_bands[0]
+freq_bands = ['theta', 'alpha', 'lowerbeta', 'higherbeta', 'gamma', 'allbands']
+band = freq_bands[5]
 ica_dict = {participant:ica_bool_PD, participant:ica_bool_CTL}
 
 i = 0
@@ -149,7 +150,7 @@ my_variable = PDsx if participant == 'PD' else CTLsx
 for id in my_variable:
     subject, session = (id, session)
     do_ica = True
-    do_tfr = True
+    do_tfr = False
     dict_session = {1:'ON', 2:'OFF'}
     filename = f"/Users/senthilp/Desktop/PD_REST/{subject}_{session}_PD_REST.mat"
     data = read_mat(filename)
@@ -232,7 +233,7 @@ for id in my_variable:
     PSD_sub_list.append(subject_mean)
     PSD_freq_list.append(freq)
 
-# mean_welch_psd(PSD_sub_list, PSD_freq_list, participant)
+
 
     # epochs_eyes_closed.plot(n_channels=10, n_epochs=10, block=True, scalings='auto') # scalings is Y limits for plots
 
@@ -265,6 +266,8 @@ for id in my_variable:
 
         power_eyes_closed_avg = power_eyes_closed.average()
         power_eyes_closed_avg.save(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{band}_{subject}_{participant}_{dict_session[session]}_EC-tfr.h5', overwrite=True)
+
+mean_welch_psd(PSD_sub_list, PSD_freq_list, participant)
 
 # power_eyes_closed_avg = mne.time_frequency.read_tfrs(f'S1_S2-{dict_session[session]}-tfr.h5')
 
