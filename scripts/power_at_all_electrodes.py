@@ -2,10 +2,10 @@ import mne
 import numpy as np
 import pickle
 
-participant = 'CTL'
-condition = 'closed'
-freq_bands = ['theta', 'alpha', 'lowerbeta', 'higherbeta', 'gamma']
-#band = freq_bands[0]
+participant = 'PD'
+condition = 'open'
+freq_bands = ['theta', 'alpha', 'lowerbeta', 'higherbeta', 'gamma', 'allbands']
+band = freq_bands[5]
 
 for band in freq_bands:
     tfr_avg = f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{band}_{participant}_eyes{condition}_tfr_avg_allsubejcts.h5'

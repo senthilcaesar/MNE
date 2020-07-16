@@ -141,7 +141,7 @@ ica_bool_CTL = [3, 2, None, None, None, 2, None, 1, 1, 1, None, 1, None, None, 1
 participant = 'PD'
 session = 1
 freq_bands = ['theta', 'alpha', 'lowerbeta', 'higherbeta', 'gamma', 'allbands']
-band = freq_bands[5]
+band = freq_bands[0]
 ica_dict = {participant:ica_bool_PD, participant:ica_bool_CTL}
 
 i = 0
@@ -150,7 +150,7 @@ PSD_freq_list = []
 my_variable = PDsx if participant == 'PD' else CTLsx
 for id in my_variable:
     subject, session = (id, session)
-    do_ica = True
+    do_ica = False
     do_tfr = False
     dict_session = {1:'ON', 2:'OFF'}
     filename = f"/Users/senthilp/Desktop/PD_REST/{subject}_{session}_PD_REST.mat"
@@ -193,6 +193,8 @@ for id in my_variable:
     '''Annotations are a way of storing short strings of information about temporal spans of a raw object'''
     my_annot = mne.Annotations(onset=sample_times_sec[1:], duration=durations[1:], description=events_type[1:])
     raw.set_annotations(my_annot)
+
+    raw.plot(n_channels=10, start=20, duration=10, scalings='auto', show=True, block=True)
      
     # print(f"Time in 51.6 sec to integer index of the sample occuring {raw.time_as_index(51.6)}")
     # print(f"Time in 55.298 sec to integer index of the sample occuring {raw.time_as_index(55.298)}")
@@ -231,11 +233,11 @@ for id in my_variable:
     np.save('test.npy', epochs_arr_eyes_open)
     print(f"Shape of eyes open epochs array {np.shape(epochs_arr_eyes_open)}")
     print(f"Size of 1st epoch {np.shape(epochs_arr_eyes_open[0,:,:])}")
-    subject_mean, freq = welch_PSD(epochs_eyes_open, subject, participant)
-    PSD_sub_list.append(subject_mean)
-    PSD_freq_list.append(freq)
+    #subject_mean, freq = welch_PSD(epochs_eyes_open, subject, participant)
+    #PSD_sub_list.append(subject_mean)
+    #PSD_freq_list.append(freq)
 
-    # epochs_eyes_open.plot(n_channels=10, n_epochs=10, block=True, scalings='auto') # scalings is Y limits for plots
+    #epochs_eyes_open.plot(n_channels=10, n_epochs=10, block=True, scalings='auto') # scalings is Y limits for plots
 
     # Time Frequency Analysis
     if (do_tfr):
@@ -261,14 +263,14 @@ for id in my_variable:
              n_cycles = n_cycles[:]
 
         # freqs = np.logspace(*np.log10([4, 60]), num=21)                # logarithmic spaced
-        
+        print(freqs)
         power_eyes_open = tfr_morlet(epochs_eyes_open, freqs=freqs, n_cycles=n_cycles, 
                             use_fft=True, return_itc=False, decim=3, 
                             n_jobs=4, average=False)
         power_eyes_open_avg = power_eyes_open.average()
         power_eyes_open_avg.save(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{band}_{subject}_{participant}_{dict_session[session]}_EO-tfr.h5', overwrite=True)
 
-mean_welch_psd(PSD_sub_list, PSD_freq_list, participant)
+#mean_welch_psd(PSD_sub_list, PSD_freq_list, participant)
 
 # power_eyes_open_avg = mne.time_frequency.read_tfrs(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{band}_{subject}_{participant}_{dict_session[session]}_EO-tfr.h5')
 
@@ -281,7 +283,7 @@ mean_welch_psd(PSD_sub_list, PSD_freq_list, participant)
 # Optional: convert power to decibels (dB = 10 * log10(power))
 # power_eyes_open_avg[0].data = 10 * np.log10(power_eyes_open_avg[0].data)
 
-# style = dict(sensors=True, image_interp='sinc')
+#style = dict(sensors=True, image_interp='sinc')
 #power_eyes_open_avg[0].plot_joint(mode=None, timefreqs=[(0.5, 10), (1.3, 20)], topomap_args=style)
 
 # for pick_channel in electrodes:

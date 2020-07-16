@@ -150,7 +150,7 @@ my_variable = PDsx if participant == 'PD' else CTLsx
 for id in my_variable:
     subject, session = (id, session)
     do_ica = True
-    do_tfr = False
+    do_tfr = True
     dict_session = {1:'ON', 2:'OFF'}
     filename = f"/Users/senthilp/Desktop/PD_REST/{subject}_{session}_PD_REST.mat"
     data = read_mat(filename)
@@ -229,9 +229,9 @@ for id in my_variable:
     epochs_arr_eyes_closed = epochs_eyes_closed.get_data() # Get all epochs as a 3D array
     print(f"Shape of eyes closed epochs array {np.shape(epochs_arr_eyes_closed)}")
     print(f"Size of 1st epoch {np.shape(epochs_arr_eyes_closed[0,:,:])}")
-    subject_mean, freq = welch_PSD(epochs_eyes_closed, subject, participant)
-    PSD_sub_list.append(subject_mean)
-    PSD_freq_list.append(freq)
+    # subject_mean, freq = welch_PSD(epochs_eyes_closed, subject, participant)
+    # PSD_sub_list.append(subject_mean)
+    # PSD_freq_list.append(freq)
 
 
 
@@ -267,7 +267,7 @@ for id in my_variable:
         power_eyes_closed_avg = power_eyes_closed.average()
         power_eyes_closed_avg.save(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{band}_{subject}_{participant}_{dict_session[session]}_EC-tfr.h5', overwrite=True)
 
-mean_welch_psd(PSD_sub_list, PSD_freq_list, participant)
+#mean_welch_psd(PSD_sub_list, PSD_freq_list, participant)
 
 # power_eyes_closed_avg = mne.time_frequency.read_tfrs(f'S1_S2-{dict_session[session]}-tfr.h5')
 
