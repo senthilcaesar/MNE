@@ -30,7 +30,7 @@ def make_montage_cap385():
     Returns:
         <class 'mne.channels.montage.DigMontage'>
     """
-    montage_file = '/Users/senthilp/Downloads/standard-10-5-cap385.elp'
+    montage_file = '/home/senthil/caesar/PD_data/standard-10-5-cap385.elp'
     montage = mne.channels.read_custom_montage(fname=montage_file, coord_frame='head')
     print(f"Created {len(ch_names[:-3])} channel positions")
     return montage
@@ -45,7 +45,7 @@ def iterate_over_annotation(raw):
 
 
 def plot_topomap_power(power_avg):
-    fig, axis = plt.subplots(1, 4, figsize=(7, 4))
+    axis = plt.subplots(1, 4, figsize=(7, 4))
     power_avg[0].plot_topomap(ch_type='eeg', fmin=13, fmax=30,axes=axis[0],
                    title='Beta', show=False)
     power_avg[0].plot_topomap(ch_type='eeg', fmin=8, fmax=13,axes=axis[1],
@@ -91,7 +91,7 @@ ica_bool_CTL = [3, 2, None, None, None, 2, None, 1, 1, 1, None, 1, None, None, 1
 participant = 'PD'
 session = 1
 freq_bands = ['theta', 'alpha', 'lowerbeta', 'higherbeta', 'gamma', 'allbands']
-band = freq_bands[0]
+band = freq_bands[3]
 ica_dict = {participant:ica_bool_PD, participant:ica_bool_CTL}
 
 i = 0
@@ -102,7 +102,7 @@ for id in my_variable:
     subject, session = (id, session)
     do_ica = True
     dict_session = {1:'ON', 2:'OFF'}
-    filename = f"/Users/senthilp/Desktop/PD_REST/{subject}_{session}_PD_REST.mat"
+    filename = f"/home/senthil/caesar/PD_data/{subject}_{session}_PD_REST.mat"
     data = read_mat(filename)
     raw_dict = data['EEG']
     (data_eeg, sfreq,
@@ -172,10 +172,10 @@ for id in my_variable:
 
     high_pass = freqs[0]
     low_pass = freqs[-1]
-    epochs_eyes_open.filter(high_pass, low_pass, n_jobs=4)
+    epochs_eyes_open.filter(high_pass, low_pass, n_jobs=16)
     epochs_arr_eyes_open = epochs_eyes_open.get_data() # Get all epochs as a 3D array
-    print(np.shape(epochs_arr_eyes_open), subject)
-    np.save(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/PEC/{band}_{subject}_{participant}_EO_epochs.npy', epochs_arr_eyes_open)
+    # print(np.shape(epochs_arr_eyes_open), subject)
+    np.save(f'/home/senthil/caesar/MNE/scripts/data/PEC/{band}_{subject}_{participant}_EO_epochs.npy', epochs_arr_eyes_open)
     # Correlation values are statistically masked
     corr = mne.connectivity.envelope_correlation(epochs_eyes_open, combine='mean', verbose=True, orthogonalize=False)
-    np.save(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/PEC/{band}_{subject}_{participant}_EO.npy', corr)
+    np.save(f'/home/senthil/caesar/MNE/scripts/data/PEC/{band}_{subject}_{participant}_EO.npy', corr)

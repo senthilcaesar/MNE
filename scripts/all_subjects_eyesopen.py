@@ -30,7 +30,7 @@ def make_montage_cap385():
     Returns:
         <class 'mne.channels.montage.DigMontage'>
     """
-    montage_file = '/Users/senthilp/Downloads/standard-10-5-cap385.elp'
+    montage_file = '/home/senthil/caesar/PD_data/standard-10-5-cap385.elp'
     montage = mne.channels.read_custom_montage(fname=montage_file, coord_frame='head')
     print(f"Created {len(ch_names[:-3])} channel positions")
     return montage
@@ -82,8 +82,8 @@ def welch_PSD(epochs_eyes_open, subject, participant):
     psds_welch_mean, freqs_mean = psd_welch(epochs_eyes_open, **kwargs)
     psds_welch_mean = 10 * np.log10(psds_welch_mean)
     psds_welch_mean = psds_welch_mean.mean(0).mean(0)
-    psd_mean_subjs = f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{subject}_{participant}_PSD_mean_EO.npy'
-    freq_subjs = f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{subject}_{participant}_freq_EO.npy'
+    psd_mean_subjs = f'/home/senthil/caesar/MNE/scripts/data/{subject}_{participant}_PSD_mean_EO.npy'
+    freq_subjs = f'/home/senthil/caesar/MNE/scripts/data/{subject}_{participant}_freq_EO.npy'
     np.save(psd_mean_subjs, psds_welch_mean)
     np.save(freq_subjs, freqs_mean)
     return (psd_mean_subjs, freq_subjs)
@@ -97,8 +97,8 @@ def mean_welch_psd(welch_subjs_mean, freqs_mean, participant):
         PSD_mean_arr = np.add(PSD_mean_arr, welch)
     PSD_mean_arr = PSD_mean_arr / len(welch_subjs_mean)
     freq_mean_arr = freq
-    np.save(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{participant}_psd_mean_EO.npy', PSD_mean_arr)
-    np.save(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{participant}_freq_mean_EO.npy', freq_mean_arr)
+    np.save(f'/home/senthil/caesar/MNE/scripts/data/{participant}_psd_mean_EO.npy', PSD_mean_arr)
+    np.save(f'/home/senthil/caesar/MNE/scripts/data/{participant}_freq_mean_EO.npy', freq_mean_arr)
 
 
 def GFP(epochs_eyes_open1, epochs_eyes_open2, session):
@@ -153,7 +153,7 @@ for id in my_variable:
     do_ica = False
     do_tfr = False
     dict_session = {1:'ON', 2:'OFF'}
-    filename = f"/Users/senthilp/Desktop/PD_REST/{subject}_{session}_PD_REST.mat"
+    filename = f"/home/senthil/caesar/PD_data/{subject}_{session}_PD_REST.mat"
     data = read_mat(filename)
     raw_dict = data['EEG']
     (data_eeg, sfreq,
@@ -194,7 +194,7 @@ for id in my_variable:
     my_annot = mne.Annotations(onset=sample_times_sec[1:], duration=durations[1:], description=events_type[1:])
     raw.set_annotations(my_annot)
 
-    raw.plot(n_channels=10, start=20, duration=10, scalings='auto', show=True, block=True)
+    # raw.plot(n_channels=10, start=20, duration=10, scalings='auto', show=True, block=True)
      
     # print(f"Time in 51.6 sec to integer index of the sample occuring {raw.time_as_index(51.6)}")
     # print(f"Time in 55.298 sec to integer index of the sample occuring {raw.time_as_index(55.298)}")
@@ -268,7 +268,7 @@ for id in my_variable:
                             use_fft=True, return_itc=False, decim=3, 
                             n_jobs=4, average=False)
         power_eyes_open_avg = power_eyes_open.average()
-        power_eyes_open_avg.save(f'/Users/senthilp/Desktop/mne_tutorial/scripts/data/{band}_{subject}_{participant}_{dict_session[session]}_EO-tfr.h5', overwrite=True)
+        power_eyes_open_avg.save(f'/home/senthil/caesar/MNE/scripts/data/{band}_{subject}_{participant}_{dict_session[session]}_EO-tfr.h5', overwrite=True)
 
 #mean_welch_psd(PSD_sub_list, PSD_freq_list, participant)
 
