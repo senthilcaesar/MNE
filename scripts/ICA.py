@@ -39,7 +39,7 @@ raw.load_data()
 ica.exclude = [0, 1]
 reconst_raw = raw.copy()
 ica.apply(reconst_raw)
-# raw.plot(order=artifact_picks, n_channels=len(artifact_picks), block=True)
+raw.plot(order=artifact_picks, n_channels=len(artifact_picks), block=True)
 # reconst_raw.plot(order=artifact_picks, n_channels=len(artifact_picks), block=True)
 
 

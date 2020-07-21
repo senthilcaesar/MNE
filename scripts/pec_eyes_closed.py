@@ -15,11 +15,11 @@ No CTL do session 2 ( data from 28 Parkinsons’s disease PD patients )
 
 Referenced to CPz
 
-( 1 min of eyes open rest )
+( 1 min of eyes closed rest )
 trigger s3 happens every 2 sec
 trigger s4 happens every 2 sec
 
-( 1 min of eyes open rest )
+( 1 min of eyes closed rest )
 trigger s1 happens every 2 sec
 trigger s2 happens every 2 sec
 
@@ -88,10 +88,10 @@ ica_bool_PD = [None, None, 1, 2, None, None, None, None, 1, None, None, 1, None,
             ,None, 3, 3, 1, 5, None, 2, None, 2, 1, None, 5]
 ica_bool_CTL = [3, 2, None, None, None, 2, None, 1, 1, 1, None, 1, None, None, 1, 1, None,
                 1, None, None, None, None, None, 1, 1, None, None]
-participant = 'PD'
+participant = 'CTL'
 session = 1
 freq_bands = ['theta', 'alpha', 'lowerbeta', 'higherbeta', 'gamma', 'allbands']
-band = freq_bands[3]
+band = freq_bands[4]
 ica_dict = {participant:ica_bool_PD, participant:ica_bool_CTL}
 
 i = 0
@@ -134,6 +134,7 @@ for id in my_variable:
     '''Annotations are a way of storing short strings of information about temporal spans of a raw object'''
     my_annot = mne.Annotations(onset=sample_times_sec[1:], duration=durations[1:], description=events_type[1:])
     raw.set_annotations(my_annot)
+    raw.plot(n_channels=10, start=20, duration=10, scalings='auto', show=True, block=True)
 
     # Event array is needed for epoching continuous data
     events, event_dict = mne.events_from_annotations(raw, verbose=False)
@@ -151,9 +152,9 @@ for id in my_variable:
     tmin =  -2.0 # start of each epoch ( 2 sec before the trigger )
     tmax = 4.0 # end of each epoch ( 4 sec after the trigger )
 
-    # Load condition eyes open
-    event_id_eyes_open = dict(S1=1, S2=2)
-    epochs_eyes_open = mne.Epochs(raw, events, tmin=tmin, tmax=tmax, event_id=event_id_eyes_open, 
+    # Load condition eyes closed
+    event_id_eyes_closed = dict(S3=3, S4=4)
+    epochs_eyes_closed = mne.Epochs(raw, events, tmin=tmin, tmax=tmax, event_id=event_id_eyes_closed, 
                         preload=True, verbose=True)
 
     freqs = [2,3,4,5,6,7,8,9,11,13,15,18,21,23,26,30,35,40,45,50]
@@ -172,10 +173,10 @@ for id in my_variable:
 
     high_pass = freqs[0]
     low_pass = freqs[-1]
-    epochs_eyes_open.filter(high_pass, low_pass, n_jobs=16)
-    epochs_arr_eyes_open = epochs_eyes_open.get_data() # Get all epochs as a 3D array
-    # print(np.shape(epochs_arr_eyes_open), subject)
-    np.save(f'/home/senthil/caesar/MNE/scripts/data/PEC/{band}_{subject}_{participant}_EO_epochs.npy', epochs_arr_eyes_open)
+    epochs_eyes_closed.filter(high_pass, low_pass, n_jobs=16)
+    epochs_arr_eyes_closed = epochs_eyes_closed.get_data() # Get all epochs as a 3D array
+    # print(np.shape(epochs_arr_eyes_closed), subject)
+    np.save(f'/home/senthil/caesar/MNE/scripts/data/PEC/{band}_{subject}_{participant}_EC_epochs.npy', epochs_arr_eyes_closed)
     # Correlation values are statistically masked
-    corr = mne.connectivity.envelope_correlation(epochs_eyes_open, combine='mean', verbose=True, orthogonalize=False)
-    np.save(f'/home/senthil/caesar/MNE/scripts/data/PEC/{band}_{subject}_{participant}_EO.npy', corr)
+    corr = mne.connectivity.envelope_correlation(epochs_eyes_closed, combine='mean', verbose=True, orthogonalize=False)
+    np.save(f'/home/senthil/caesar/MNE/scripts/data/PEC/{band}_{subject}_{participant}_EC.npy', corr)
